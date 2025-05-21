@@ -1,0 +1,57 @@
+.ajax-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.3s ease;
+
+  
+}
+
+.ajax-panel.open {
+  max-height: 1000px;
+}
+
+.create-event-panel {
+  @include form;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: $color-bg;
+  border-radius: 8px;
+  overflow: hidden;
+
+  th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid $color-text;
+  }
+
+  th {
+    background-color: $color-dark;;
+    font-weight: bold;
+  }
+
+  td form {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    select {
+      padding: 0.4rem;
+      border-radius: 4px;
+      border: 1px solid $color-text;
+      color: $color-text-muted;
+      background: $color-bg;
+    }
+
+    button {
+      @include button;
+    }
+  }
+
+  tr:hover {
+    background-color: $color-bg;
+  }
+}

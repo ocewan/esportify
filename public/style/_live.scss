@@ -1,0 +1,49 @@
+.section-lives {
+  background: $color-dark;
+  padding: 4rem 2rem;
+
+  h2 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    @include gradient-text;
+  }
+
+  .lives-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .live-card {
+    background: $color-bg;
+    color: #fff;
+    border-radius: 10px;
+    width: 240px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 6px $color-shadow;
+
+    img {
+      width: 100%;
+      border-radius: 6px;
+      margin-bottom: 0.5rem;
+    }
+
+    h4 {
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+    }
+
+    span {
+      font-weight: bold;
+      color: $color-accent;
+    }
+
+    &:hover {
+      scale: 1.05;
+      transition: 0.3s ease;
+    }
+  }
+}

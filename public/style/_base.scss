@@ -1,0 +1,44 @@
+body {
+  font-family: $font-body;
+  background-color: $color-bg;
+  color: $color-text;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-size: 1rem;
+}
+
+h1, h2, h3, h4 {
+  font-family: $font-heading;
+  font-weight: 700;
+}
+
+a {
+  text-decoration: none;
+  color: $color-text;
+}
+
+p {
+  font-size: 1.125rem;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+button {
+  cursor: pointer;
+}
+
+ul, li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.page-wrapper {
+  flex: 1;
+}

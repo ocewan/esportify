@@ -1,0 +1,107 @@
+@include respond(sm) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+
+    .hero-logo {
+      font-size: 4rem;
+      margin-top: 1rem;
+    }
+  }
+
+  .section-esport {
+    flex-direction: column;
+
+    img, .esport-content {
+      width: 100%;
+    }
+  }
+
+  .lives-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  // HEADER
+  .header {
+    gap: 1rem;
+    padding: 1rem;
+
+    .logo,
+    .nav,
+    .auth-links {
+      width: 100%;
+      text-align: center;
+    }
+
+    .nav a,
+    .auth-links a {
+      display: inline-block;
+      margin: 0.5rem;
+    }
+  }
+
+  .menu-toggle {
+    display: block;
+    font-size: 1.8rem;
+    cursor: pointer;
+    margin-left: 1rem;
+  }
+
+  #nav {
+    display: none;
+    flex-direction: column;
+    background: $color-bg;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    padding: 1rem;
+    z-index: 9;
+
+    a {
+      color: white;
+      padding: 0.5rem 0;
+      text-align: center;
+
+      &:hover {
+        color: $color-accent;
+      }
+    }
+
+    &.open {
+      display: flex;
+    }
+  }
+
+  // LIST EVENT PAGE
+  .filters-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  // FOOTER
+  .footer {
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+
+    .footer-cols {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+
+      &::after {
+        display: none;
+      }
+    }
+
+    .footer-logo {
+      margin-bottom: 1rem;
+    }
+
+    .socials {
+      margin-top: 1rem;
+    }
+  }
+}

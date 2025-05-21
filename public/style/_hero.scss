@@ -1,0 +1,26 @@
+.hero {
+  min-height: 500px;
+  padding: 5rem 2rem;
+  background: url(../img/bg.png) no-repeat center center/cover;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+
+  .hero-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+
+    h1 {
+      @include gradient-text;
+      font-size: 3rem;
+      line-height: 1.2;
+    }
+
+    .btn {
+      @include button;
+    }
+  }
+}

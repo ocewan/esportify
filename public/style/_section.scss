@@ -1,0 +1,79 @@
+.section-banner {
+  .banner-content {
+    min-height: 350px;
+    background: url(../img/banner.jpg) fixed right/cover;
+  }
+}
+
+.section-esport {
+  display: flex;
+  align-items: center;
+  background: $color-dark;
+  padding: 4rem 2rem;
+  gap: 2rem;
+
+  .slideshow-container {
+    position: relative;
+    width: 50%;
+    height: 550px;
+    overflow: hidden;
+
+    .mySlides {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      z-index: 0;
+
+      &.active {
+        opacity: 1;
+        z-index: 1;
+      }
+    }
+  }
+
+  img {
+    width: 50%;
+    border-radius: 8px;
+  }
+
+  .esport-content {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 500px;
+    margin: 0 auto;
+
+    h2 .gradient-text {
+      font-size: 2rem;
+      @include gradient-text;
+    }
+
+    .features {
+      margin-top: 1rem;
+
+      li {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+
+        img {
+          width: 30px;
+          height: 30px;
+          margin-right: 0.5rem;
+        }
+      }
+    }
+
+    .btn {
+      @include button;
+    }
+  }
+}
