@@ -14,7 +14,7 @@ function showSlides() {
 
   slides[slideIndex - 1].classList.add("active");
 
-  setTimeout(showSlides, 4000); // 4s
+  setTimeout(showSlides, 4000); // 4s entre chaque diapositives
 }
 
 document.addEventListener("DOMContentLoaded", showSlides);
