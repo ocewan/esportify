@@ -10,6 +10,7 @@ if (!isset($_SESSION['user_id'], $_POST['event_id'])) {
     exit;
 }
 
+// vérification si l'utilisateur est connecté
 $userId = (int) $_SESSION['user_id'];
 $eventId = (int) $_POST['event_id'];
 
