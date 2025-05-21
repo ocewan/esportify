@@ -43,7 +43,6 @@ $stats = fetchAdminStats($pdo);
     ?>
 
 <?php include __DIR__ . '/../partials/dashboard/panels.php'; ?>
-        
     <div class="stats">
         <h2>Statistiques</h2>
         <ul>
@@ -52,7 +51,6 @@ $stats = fetchAdminStats($pdo);
         <li><i class='fa-solid fa-hand' style='color: #ffffff;'></i> Participations : <strong><?= $stats['participations'] ?></strong></li>
         </ul>
     </div>
-    
 </div>
 
 <?php include __DIR__ . '/../partials/dashboard/scores.php'; ?>

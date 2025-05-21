@@ -16,7 +16,7 @@ include __DIR__ . '/../partials/dashboard/card_functions.php';
     <h1>Tableau de bord Organisateur <br> Bienvenue <strong><?= $username ?></strong> <i class="fa-solid fa-hand-peace"></i></h1>
 
 
-    <h2>Mes événements</h2>
+    <h2>Mes événements créés</h2>
     <?php
     $events = fetchEvents($pdo, $userId);
     echo '<div class="dashboard-event-grid">';

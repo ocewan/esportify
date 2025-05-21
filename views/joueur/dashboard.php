@@ -14,7 +14,7 @@ $nbParticipations = fetchParticipationCount($pdo, $userId);
 
 <!-- affichage du dashboard joueur -->
 <div class="dashboard-wrapper">
-    <h1>Bienvenue <strong><?= $username ?></strong> <i class="fa-solid fa-hand-peace" style="color: #ffffff;"></i></h1>
+    <h1>Bienvenue <strong><?= $username ?></strong> <i class="fa-solid fa-hand-peace"></i></h1>
 
     <?php if (isset($_GET['success'])): ?>
         <p style="color:green;"><?= htmlspecialchars($_GET['success']) ?></p>
