@@ -1,7 +1,10 @@
 <?php
 $userId = $_SESSION['user_id'] ?? null;
 
-if ($_SERVER['HTTP_HOST'] === 'localhost') {
+$host = $_SERVER['HTTP_HOST'] ?? '';
+$isLocal = in_array($host, ['localhost', '127.0.0.1', 'esportify.local']);
+
+if ($isLocal) {
     require_once __DIR__ . '/../../../config/mongodb.php';
     require_once __DIR__ . '/../../../scripts/db_local.php';
 } else {
