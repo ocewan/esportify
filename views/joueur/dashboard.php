@@ -46,5 +46,3 @@ $nbParticipations = fetchParticipationCount($pdo, $userId);
 </div>
 
 <?php include __DIR__ . '/../partials/footer.php'; ?>
-
-<script src="/js/dashboard_ajax.js"></script>

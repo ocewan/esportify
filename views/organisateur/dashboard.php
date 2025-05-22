@@ -43,5 +43,3 @@ include __DIR__ . '/../partials/dashboard/card_functions.php';
 </div>
 
 <?php include __DIR__ . '/../partials/footer.php'; ?>
-
-<script src="/js/dashboard_ajax.js"></script>

@@ -5,8 +5,9 @@ Projet réalisé dans le cadre de l'examen ECF du titre Développeur Web & Web M
 
 ## Présentation du projet
 
-**Esportify** permet à trois types d’utilisateurs (joueur, organisateur, administrateur) de :
+Esportify permet à quatre types d’utilisateurs (visiteur, joueur, organisateur, administrateur) de :
 
+- Visiter la plateforme et les évenements disponibles
 - Créer et gérer des événements compétitifs
 - S’inscrire, participer, rejoindre des matchs
 - Gérer ses favoris, son tableau de bord et son historique
@@ -17,9 +18,9 @@ Projet réalisé dans le cadre de l'examen ECF du titre Développeur Web & Web M
 
 esportify/
 ├── public/ # Fichiers accessibles (CSS, JS, images)
-|── api/ # Requêtes AJAX asynchrones
-├── views/ # Vues PHP (admin, orga, joueur)
-├── config/ # Connexions à la BDD
+| |── api/ # Requêtes AJAX asynchrones
+├── views/ # Vues PHP (admin, orga, joueur, event)
+├── config/ # Connexions aux BDD
 ├── controllers/ # Traitement des formulaires
 ├── data/ # Fichiers SQL & JSON (bases de données à importer)
 ├── scripts/ # Fonctions supplémentaires
@@ -54,18 +55,19 @@ C:/wamp64/www/esportify
 
 ### 2. Importer la base de données (relationnelle)
 
-1. Ouvrir `phpMyAdmin`
-2. Créer une base nommée **esportify**
-3. Aller dans **Importer**
-4. Sélectionner le fichier `data/esportify.sql`
-5. Lancer l'importation
+- Ouvrir `phpMyAdmin`
+- Créer une base nommée **esportify**
+- Aller dans **Importer**
+- Sélectionner le fichier `data/esportify.sql`
+- Lancer l'importation
 
 ### 3. Importer les données MongoDB (base de données noSQL sur les scores)
 
-1. Décompresser `data/esportify.zip`
-2. Ouvrir MongoDB Compass
-3. Créer une base nommée `esportify`
-4. Importer les fichiers `.json` par collection
+- Ouvrir MongoDB Compass
+- Etablir la connexion en local
+- Dans cette connexion appuyer sur "Créer une base de données"
+- Créer une base nommée `esportify`
+- Importer les fichiers `.json` par collection (dossier data/)
 
 ### 4. Configurer l’accès base de données
 
@@ -79,56 +81,64 @@ $pdo = new PDO("mysql:host=localhost;dbname=esportify;charset=utf8", "root", "")
 - Utilisateur par défaut sous WAMP : `root`
 - Mot de passe : vide
 
-### 5. Lancer l’application
+### 5. Créer un virtual host (exemple sous WAMP)
+
+Pour accéder à l’application avec une URL propre comme http://esportify.local, il est recommandé de créer un Virtual Host.
+
+- Ouvrir WAMP et vérifier que les connexions sont actives (vert)
+- Clic gauche sur l'icône WAMP
+- Dans Apache aller sur httpd-vhosts.conf
+- Ajouter le virtual host en ajoutant tout en bas
+
+```
+  <VirtualHost \*:80>
+  ServerName esportify.local
+  DocumentRoot "C:/wamp64/www/esportify/public"
+  <Directory "C:/wamp64/www/esportify/public">
+  AllowOverride All
+  Require all granted
+  </Directory>
+  </VirtualHost>
+```
+
+- Redémarrer WAMP
+- S'assurer que dans notre fichier C:\Windows\System32\drivers\etc\hosts on a :
+  127.0.0.1 espotify.local
+
+### 6. Lancer le site
 
 - Ouvrir un navigateur
 - Entrer l’URL suivante :
 
 ```
-http://localhost/esportify/public/index.php
-```
+http://esportify.local/
 
----
+```
 
 ## Lien de déploiement
 
-À venir : [https://esportify.monapp.com](https://esportify.monapp.com)
+Le site web a été déployé sur Always Data et est disponible à l'adresse suivante :
 
----
+https://ocewan.alwaysdata.net
 
 ## Contenu du dossier `/data`
 
 - `esportify.sql` → création de la base de données relationnelle + données de test
-- `esportify_nosql_dump.zip` → collections MongoDB exportées (contient la base de données noSQL avec une collection des scores)
+- `esportify.scores.json` → collections MongoDB exportées (contient la base de données noSQL avec une collection des scores)
 - `README.md` → instructions d'importation
 
----
+### Contenu du dossier `vendor/`
 
-## Technologies utilisées
+Le dossier `vendor/` contient les dépendances nécessaires à la connexion MongoDB via PHP, installées avec Composer.  
+Bien qu’il ne soit normalement pas versionné, **il est volontairement inclus dans ce projet** pour permettre à l’évaluateur de :
 
-- HTML / CSS / SCSS
-- PHP (POO légère)
-- JavaScript (vanilla, fetch AJAX)
-- MySQL
-- MongoDB (pour la partie NoSQL)
-- Git / GitHub
+- Tester la partie NoSQL localement sans avoir à réinstaller Composer
+- Éviter toute erreur liée à `autoload.php` ou aux classes MongoDB manquantes
 
----
-
-## Gestion Git (workflow)
-
-- `main` → version stable
-- `develop` → branche de développement continue
-- `feature/...` → branches de tâches fonctionnelles :
-  - `feature/dashboard`
-  - `feature/api-cleanup`
-  - `feature/deploiement`
-  - `feature/final-check`
-
----
+Ce dossier n’est pas utilisé sur le serveur AlwaysData, où MongoDB est désactivé automatiquement.
 
 ## Auteur
 
 Projet réalisé par **Océane**  
 Dans le cadre de l’ECF - Titre professionnel DWWM  
-Session : Été 2025
+Session : Septembre/Octobre 2025

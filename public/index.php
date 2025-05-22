@@ -112,3 +112,4 @@ switch ($page) {
         require __DIR__ . '/../views/accueil.php'; // page d'accueil publique
         break;
 }
+?>

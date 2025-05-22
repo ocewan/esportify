@@ -27,6 +27,8 @@
 <script src="/js/slide.js"></script>
 <script src="/js/live_list.js"></script>
 <script src="/js/newsletter.js"></script>
+<script src="/js/dashboard_ajax.js"></script>
+<script src="/js/history.js"></script>
 </body>
 
 </html>

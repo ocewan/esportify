@@ -3,6 +3,10 @@ require_once __DIR__ . '/../../helpers/auth.php';
 require_login();
 require_once __DIR__ . '/../../config/db.php';
 
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+
 header('Content-Type: text/html');
 
 $userId = $_SESSION['user_id'];

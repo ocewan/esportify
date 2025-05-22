@@ -56,5 +56,3 @@ $stats = fetchAdminStats($pdo);
 <?php include __DIR__ . '/../partials/dashboard/scores.php'; ?>
 
 <?php include __DIR__ . '/../partials/footer.php'; ?>
-
-<script src="/js/dashboard_ajax.js"></script>
