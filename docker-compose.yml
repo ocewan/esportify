@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    volumes:
+      - ./public:/var/www/html
+      - ./config:/var/www/config
+      - ./controllers:/var/www/controllers
+      - ./helpers:/var/www/helpers
+      - ./views:/var/www/views
+      - ./scripts:/var/www/scripts
+      - ./vendor:/var/www/vendor
+    depends_on:
+      - mysql
+      - mongo
+    environment:
+      APP_ENV: "local"
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: esportify
+      MYSQL_USER: esport
+      MYSQL_PASSWORD: esportpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./data:/docker-entrypoint-initdb.d
+
+  mongo:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./data:/import
+
+volumes:
+  dbdata:
+  mongodb_data:
