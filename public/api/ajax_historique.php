@@ -13,8 +13,10 @@ $userId = $_SESSION['user_id'];
 $roleId = $_SESSION['role_id'];
 
 // vérication du rôle de l'utilisateur
+// si rôle admin
 if ($roleId === 4) {
     $stmt = $pdo->query("SELECT e.*, u.username AS creator FROM event e JOIN user u ON e.created_by = u.id WHERE e.date_end < NOW() ORDER BY e.date_end DESC");
+// si rôle orga
 } elseif ($roleId === 3) {
     $stmt = $pdo->prepare("SELECT DISTINCT e.*, u.username AS creator FROM event e JOIN user u ON e.created_by = u.id LEFT JOIN eventparticipant ep ON ep.event_id = e.id AND ep.user_id = :user WHERE (e.created_by = :user OR ep.user_id = :user) AND e.date_end < NOW() ORDER BY e.date_end DESC");
     $stmt->execute(['user' => $userId]);
