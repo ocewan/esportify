@@ -2,7 +2,7 @@
 $userId = $_SESSION['user_id'] ?? null;
 
 $host = $_SERVER['HTTP_HOST'] ?? '';
-$isLocal = in_array($host, ['localhost', '127.0.0.1', 'esportify.local']);
+$isLocal = getenv('APP_ENV') === 'local';
 
 if ($isLocal) {
     require_once __DIR__ . '/../../../config/mongodb.php';
@@ -25,10 +25,10 @@ if ($isLocal) {
             <?php
             if (is_object($scoreCollection)) {
                 $scores = $scoreCollection->find(['user_id' => (string)$userId]);
-
+                $scores = iterator_to_array($scoreCollection->find(['user_id' => (string)$userId]));
                 foreach ($scores as $score) {
                     $eventId = $score['event_id'];
-                    $eventName = "Inconnu";
+                    $eventName = "Event inconnu";
 
                     $result = $conn->query("SELECT title FROM event WHERE id = " . (int)$eventId);
                     if ($result && $row = $result->fetch_assoc()) {
