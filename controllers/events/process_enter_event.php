@@ -1,14 +1,13 @@
 <?php
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../helpers/auth.php';
+require_once __DIR__ . '/../../src/Repository/EventRepository.php';
+require_once __DIR__ . '/../../src/Repository/EventParticipantRepository.php';
+require_once __DIR__ . '/../../src/Service/EventService.php';
+
 require_login();
 
-// vérification du rôle
-if ($_SESSION['role_id'] < 2) {
-    header('Location: /index.php?page=accueil&error=Accès non autorisé');
-    exit;
-}
-
+// Vérification du rôle de l'utilisateur
 $eventId = $_POST['event_id'] ?? null;
 $userId = $_SESSION['user_id'];
 $role = $_SESSION['role_id'];
@@ -19,31 +18,22 @@ $page = match ($role) {
     default => 'accueil'
 };
 
-// vérification de l'ID de l'événements
+// vérification de l'ID de l'événement
 if (!$eventId) {
     header("Location: /index.php?page=$page&error=ID manquant");
     exit;
 }
 
-// vérification si inscrit
-$stmt = $pdo->prepare("SELECT * FROM eventparticipant WHERE event_id = ? AND user_id = ? AND status = 1");
-$stmt->execute([$eventId, $userId]);
-$participant = $stmt->fetch();
+// vérification de l'entrée de l'utilisateur dans l'événement
+$service = new EventService(new EventRepository($pdo));
+$canEnter = $service->canUserEnterEvent((int)$eventId, $userId);
 
-if (!$participant) {
-    header("Location: /index.php?page=$page&error=Accès refusé à cet événement");
-    exit;
-}
-
-// Vérifie que l’event a commencé
-$stmt = $pdo->prepare("SELECT * FROM event WHERE id = ? AND started = 1");
-$stmt->execute([$eventId]);
-$event = $stmt->fetch();
-
-if (!$event) {
-    header("Location: /index.php?page=$page&error=Événement non démarré");
+// si l'utilisateur ne peut pas entrer dans l'événement, redirection avec message d'erreur
+if ($canEnter !== "ok") {
+    header("Location: /index.php?page=$page&error=" . urlencode($canEnter));
     exit;
 }
 
 header("Location: /index.php?page=event&id=$eventId");
 exit;
+

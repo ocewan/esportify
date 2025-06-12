@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../../helpers/auth.php';
 require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../src/Repository/EventRepository.php';
+require_once __DIR__ . '/../../src/Repository/ValidationRepository.php';
+require_once __DIR__ . '/../../src/Service/EventService.php';
+
 require_role(4); // Admin uniquement
 
 $eventId = $_POST['event_id'] ?? null;
@@ -12,9 +16,15 @@ if (!$eventId || !in_array($status, [0, 1])) {
     exit;
 }
 
-// insertion dans la table validation
-$stmt = $pdo->prepare("INSERT INTO validation (event_id, validated_by, status) VALUES (?, ?, ?)");
-$stmt->execute([$eventId, $adminId, $status]);
+// verification de l'ID de l'événement et appel du service pour valider l'événement
+$service = new EventService(new EventRepository($pdo));
+$success = $service->validateEvent((int) $eventId, $adminId, $status);
 
-header("Location: /index.php?page=admin&success=Événement traité");
+// Redirection selon le succès de l'opération
+if ($success) {
+    header("Location: /index.php?page=admin&success=Événement traité");
+} else {
+    header("Location: /index.php?page=admin&error=Erreur lors de la validation");
+}
 exit;
+

@@ -1,27 +1,26 @@
 <?php
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../helpers/auth.php';
+require_once __DIR__ . '/../../src/Repository/EventRepository.php';
+require_once __DIR__ . '/../../src/Service/EventService.php';
+
 require_role(3); // Orga ou admin
 
 $eventId = $_POST['event_id'] ?? null;
+$userId = $_SESSION['user_id'];
+$roleId = $_SESSION['role_id'];
+$page = $roleId === 4 ? 'admin' : 'organisateur';
+
+// vérification de l'ID de l'événement
 if (!$eventId) {
-    header('Location: /index.php?page=' . ($_SESSION['role_id'] === 4 ? 'admin' : 'organisateur') . '&error=ID manquant');
+    header("Location: /index.php?page=$page&error=ID manquant");
     exit;
 }
 
-// vérification si l'utilisateur a le droit de démarrer cet event
-$stmt = $pdo->prepare("SELECT * FROM event WHERE id = ?");
-$stmt->execute([$eventId]);
-$event = $stmt->fetch();
+// vérification que l'événement n'est pas déjà démarré et appel du service pour démarrer l'événement
+$service = new EventService(new EventRepository($pdo));
+$result = $service->startEvent((int)$eventId, $userId, $roleId);
 
-if (!$event || ($_SESSION['role_id'] < 4 && $event['created_by'] != $_SESSION['user_id'])) {
-    header('Location: /index.php?page=organisateur&error=Accès refusé');
-    exit;
-}
-
-// mise à jour du statut "started"
-$stmt = $pdo->prepare("UPDATE event SET started = 1 WHERE id = ?");
-$stmt->execute([$eventId]);
-
-header('Location: /index.php?page=' . ($_SESSION['role_id'] === 4 ? 'admin' : 'organisateur') . '&success=Événement démarré');
+$type = $result === "Événement démarré" ? "success" : "error";
+header("Location: /index.php?page=$page&$type=" . urlencode($result));
 exit;
