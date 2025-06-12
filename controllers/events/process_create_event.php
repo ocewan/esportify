@@ -1,36 +1,30 @@
 <?php
-require_once __DIR__ . '/../../helpers/auth.php';
 require_once __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../src/Entity/Event.php';
+require_once __DIR__ . '/../../src/Repository/EventRepository.php';
+require_once __DIR__ . '/../../src/Service/EventService.php';
+require_once __DIR__ . '/../../helpers/auth.php';
+
 require_role(3); // Organisateur ou Admin
 
-$title = trim($_POST['title'] ?? '');
-$description = trim($_POST['description'] ?? '');
-$date_event = $_POST['date_event'] ?? '';
-$date_end = $_POST['date_end'] ?? '';
-$images = [
-    "Valorant" => "img/valorant.jpg",
-    "LoL" => "img/lol.jpg",
-    "CallOfDuty" => "img/cod.jpg",
-    "Warzone" => "img/warzone.jpg",
-    "RocketLeague" => "img/rl.jpg"
-];
-$img = $images[$title] ?? null;
-
-// vérification des champs remplis ou non
-if (empty($title) || empty($description) || empty($date_event) || empty($date_end)) {
+// Vérification champs requis
+if (empty($_POST['title']) || empty($_POST['description']) || empty($_POST['date_event']) || empty($_POST['date_end'])) {
     header("Location: /index.php?page=create_event&error=Champs requis manquants");
     exit;
 }
 
-// insertion dans la base de données
-try {
-    $stmt = $pdo->prepare("INSERT INTO event (title, description, date_event, date_end, created_by, img) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$title, $description, $date_event, $date_end, $_SESSION['user_id'], $img]);
+$repo = new EventRepository($pdo);
+$service = new EventService($repo);
+$success = $service->createEvent($_POST, $_SESSION['user_id']);
 
-    $redirectPage = $_SESSION['role_id'] === 4 ? 'admin' : 'organisateur';
+// redirection selon le rôle
+$redirectPage = $_SESSION['role_id'] === 4 ? 'admin' : 'organisateur';
+
+// Si l'événement est créé avec succès, on redirige vers la page appropriée
+if ($success) {
     header("Location: /index.php?page=$redirectPage&success=Événement créé, en attente de validation");
-    exit;
-} catch (Exception $e) {
-    header("Location: /index.php?page=create_event&error=" . urlencode("Erreur : " . $e->getMessage()));
-    exit;
+} else {
+    header("Location: /index.php?page=create_event&error=Erreur lors de la création");
 }
+exit;
+

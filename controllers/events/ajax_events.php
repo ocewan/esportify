@@ -1,60 +1,30 @@
 <?php
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../helpers/auth.php';
+require_once __DIR__ . '/../../src/Repository/EventRepository.php';
+require_once __DIR__ . '/../../src/Repository/FavoriteRepository.php';
 
 $userId = $_SESSION['user_id'] ?? null;
 $role = $_SESSION['role_id'] ?? null;
-$favoriteIds = [];
 
 $players = $_GET['players'] ?? '';
 $month = $_GET['month'] ?? '';
 $hour = $_GET['hour'] ?? '';
 
-// validation des données
+// validation des paramètres
+$repo = new EventRepository($pdo);
+$events = $repo->findFilteredEvents($players, $month, $hour);
+
+// si l'utilisateur est connecté et a un rôle de joueur ou organisateur, on récupère ses favoris
+$favorites = [];
 if (in_array((int)$role, [2, 3]) && $userId) {
-    $stmtFav = $pdo->prepare("SELECT event_id FROM favorite_event WHERE user_id = ?");
-    $stmtFav->execute([$userId]);
-    $favoriteIds = $stmtFav->fetchAll(PDO::FETCH_COLUMN);
+    $favRepo = new FavoriteRepository($pdo);
+    $favorites = $favRepo->getFavoriteEventIdsForUser($userId);
 }
 
-$sql = "
-    SELECT e.id, e.title, e.date_event, e.date_end, u.username AS organisateur,
-        (SELECT COUNT(*) FROM eventparticipant ep WHERE ep.event_id = e.id AND ep.status = 1) AS participant_count
-    FROM event e
-    JOIN validation v ON v.event_id = e.id AND v.status = 1
-    JOIN user u ON e.created_by = u.id
-    WHERE e.date_end > NOW()
-";
-
-// filtrage par nombre de joueurs
-if ($players === 'lt10') {
-    $sql .= " AND (SELECT COUNT(*) FROM eventparticipant ep WHERE ep.event_id = e.id AND ep.status = 1) < 10";
-} elseif ($players === 'gte10') {
-    $sql .= " AND (SELECT COUNT(*) FROM eventparticipant ep WHERE ep.event_id = e.id AND ep.status = 1) >= 10";
-}
-
-// filtrage par mois
-if ($month !== '') {
-    $sql .= " AND MONTH(e.date_event) = " . intval($month);
-}
-
-// filtrage par heure
-if ($hour === 'morning') {
-    $sql .= " AND HOUR(e.date_event) >= 0 AND HOUR(e.date_event) < 12";
-} elseif ($hour === 'afternoon') {
-    $sql .= " AND HOUR(e.date_event) >= 12 AND HOUR(e.date_event) < 18";
-} elseif ($hour === 'evening') {
-    $sql .= " AND HOUR(e.date_event) >= 18 AND HOUR(e.date_event) <= 23";
-}
-
-$sql .= " ORDER BY e.date_event ASC";
-
-$stmt = $pdo->query($sql);
-$events = $stmt->fetchAll();
-
-// affichage des événements
+// affichage des événements (HTML généré)
 foreach ($events as $event) {
-    $isFavorite = in_array($event['id'], $favoriteIds);
+    $isFavorite = in_array($event['id'], $favorites);
 
     echo '<div class="event-card">';
     echo '<h3>' . htmlspecialchars($event['title']) . '</h3>';
@@ -71,3 +41,4 @@ foreach ($events as $event) {
 
     echo '</div>';
 }
+
