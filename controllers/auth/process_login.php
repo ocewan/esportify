@@ -1,32 +1,31 @@
 <?php
 require_once __DIR__ . '/../../config/db.php';
-session_start();
+require_once __DIR__ . '/../../helpers/auth.php';
+require_once __DIR__ . '/../../src/Repository/UserRepository.php';
+require_once __DIR__ . '/../../src/Service/UserService.php';
 
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
 
-// vérification des champs remplis ou non
+// vérification des champs obligatoires
 if (empty($username) || empty($password)) {
     header("Location: /index.php?page=login&error=" . urlencode("Champs obligatoires manquants"));
     exit;
 }
 
-// récupération de l'utilisateur
-$stmt = $pdo->prepare("SELECT * FROM user WHERE username = ?");
-$stmt->execute([$username]);
-$user = $stmt->fetch();
+// vérification des identifiants
+$service = new UserService(new UserRepository($pdo));
+$user = $service->authenticate($username, $password);
 
-if ($user && password_verify($password, $user['password'])) {
-    // connexion réussie : stocker les infos utiles
+// si l'utilisateur est trouvé, on initialise la session
+if ($user) {
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['username'] = $user['username'];
     $_SESSION['role_id'] = $user['role_id'];
-
-    // redirection vers l'accueil connecté
     header("Location: /index.php?page=home");
     exit;
-} else {
-    // mauvais identifiants
-    header("Location: /index.php?page=login&error=" . urlencode("Identifiants invalides"));
-    exit;
 }
+
+header("Location: /index.php?page=login&error=" . urlencode("Identifiants invalides"));
+exit;
+
