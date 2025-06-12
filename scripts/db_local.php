@@ -1,8 +1,8 @@
 <?php
 // connection à la BDD SQL
-$host = 'localhost';
-$user = 'root';
-$pass = ''; 
+$host = 'mysql';
+$user = 'esport';
+$pass = 'esportpass'; 
 $db = 'esportify'; 
 
 $conn = new mysqli($host, $user, $pass, $db);
