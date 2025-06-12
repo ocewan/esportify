@@ -26,16 +26,18 @@ esportify/
 ├── scripts/ # Fonctions supplémentaires
 ├── helpers/ # Auth & outils
 ├── README.md
-├── .gitignore
+├── Dockerfile # Image personnalisée
+|── docker-compose.yml # Config Docker
 └── ...
 
 ## Installation du projet en local (environnement de test)
 
+J’ai conteneurisé ce projet via Docker pour simplifier l’installation locale.
+
 ### Prérequis importants
 
-- Un environnement local installé : **WAMP**, **XAMPP** ou **Laragon**
-- PHP version ≥ 7.4
-- MySQL (phpMyAdmin recommandé)
+- Docker Desktop (et WSL2 activé pour Windows)
+  vous pouvez le trouvez sur https://www.docker.com/products/docker-desktop
 - Git installé
 
 ### 1. Cloner le projet
@@ -43,76 +45,52 @@ esportify/
 Ouvrir un terminal puis exécuter :
 
 ```bash
-git clone https://github.com/votre-utilisateur/esportify.git
+git clone https://github.com/ocewan/esportify.git
 cd esportify
 ```
 
-Copier le dossier dans le répertoire web de votre environnement local, par exemple :
+### 2. Lancer les conteneurs Docker
+
+- dans le terminal à la racine du dossier
 
 ```bash
-C:/wamp64/www/esportify
+docker-compose up --build
 ```
 
-### 2. Importer la base de données (relationnelle)
+### 3. Base de données (relationnelle)
 
-- Ouvrir `phpMyAdmin`
-- Créer une base nommée **esportify**
-- Aller dans **Importer**
-- Sélectionner le fichier `data/esportify.sql`
-- Lancer l'importation
+- Le script data/esportify.sql est exécuté automatiquement
+- un utilisateur esport avec le mot de passe esportpass est crée
 
-### 3. Importer les données MongoDB (base de données noSQL sur les scores)
+### 4. Importer les données MongoDB (base de données noSQL sur les scores)
 
-- Ouvrir MongoDB Compass
-- Etablir la connexion en local
-- Dans cette connexion appuyer sur "Créer une base de données"
-- Créer une base nommée `esportify`
-- Importer les fichiers `.json` par collection (dossier data/)
+- dans le terminal il va falloir importer manuellement la base noSQL
 
-### 4. Configurer l’accès base de données
-
-Dans `config/db.php`, vérifier les informations de connexion :
-
-```php
-<?php
-$pdo = new PDO("mysql:host=localhost;dbname=esportify;charset=utf8", "root", "");
+```bash
+docker exec -it esportify-mongo-1 mongoimport \
+  --db esportify \
+  --collection scores \
+  --file /import/esportify.scores.json \
+  --jsonArray
 ```
 
-- Utilisateur par défaut sous WAMP : `root`
-- Mot de passe : vide
-
-### 5. Créer un virtual host (exemple sous WAMP)
-
-Pour accéder à l’application avec une URL propre comme http://esportify.local, il est recommandé de créer un Virtual Host.
-
-- Ouvrir WAMP et vérifier que les connexions sont actives (vert)
-- Clic gauche sur l'icône WAMP
-- Dans Apache aller sur httpd-vhosts.conf
-- Ajouter le virtual host en ajoutant tout en bas
-
-```
-  <VirtualHost \*:80>
-  ServerName esportify.local
-  DocumentRoot "C:/wamp64/www/esportify/public"
-  <Directory "C:/wamp64/www/esportify/public">
-  AllowOverride All
-  Require all granted
-  </Directory>
-  </VirtualHost>
-```
-
-- Redémarrer WAMP
-- S'assurer que dans notre fichier C:\Windows\System32\drivers\etc\hosts on a :
-  127.0.0.1 espotify.local
+- esportify-mongo-1 correspond au nom du conteneur (que l'on peut vérifier avec docker ps)
 
 ### 6. Lancer le site
 
+- une fois démarré on peut accéder à l'application
 - Ouvrir un navigateur
 - Entrer l’URL suivante :
 
 ```
-http://esportify.local/
+http://localhost:8080
 
+```
+
+- pour arrêter le projet
+
+```bash
+docker-compose down
 ```
 
 ## Lien de déploiement
@@ -127,7 +105,7 @@ https://ocewan.alwaysdata.net
 - `esportify.scores.json` → collections MongoDB exportées (contient la base de données noSQL avec une collection des scores)
 - `README.md` → instructions d'importation
 
-### Contenu du dossier `vendor/`
+## Contenu du dossier `vendor/`
 
 Le dossier `vendor/` contient les dépendances nécessaires à la connexion MongoDB via PHP, installées avec Composer.  
 Bien qu’il ne soit normalement pas versionné, **il est volontairement inclus dans ce projet** pour permettre à l’évaluateur de :
@@ -136,6 +114,37 @@ Bien qu’il ne soit normalement pas versionné, **il est volontairement inclus 
 - Éviter toute erreur liée à `autoload.php` ou aux classes MongoDB manquantes
 
 Ce dossier n’est pas utilisé sur le serveur AlwaysData, où MongoDB est désactivé automatiquement.
+
+## Dockerfile
+
+Le `Dockerfile` permet de créer un environnement PHP 8.3 avec Apache configuré pour exécuter mon projet.
+
+## Fichier docker-compose.yml
+
+Ce fichier définit trois services :
+
+web, mysql et mongo
+
+- pour les volumes : `dbdata` et `mongodb_data` permettent de conserver les données même si les conteneurs sont supprimés.
+
+## Connexions à la base de données dans Docker
+
+Dans le fichier `docker-compose.yml`, les conteneurs `mysql` et `mongo` sont accessibles via leur nom de service (`mysql` et `mongo`).
+
+# MySQL
+
+La connexion PDO se fait via :
+
+```php
+$pdo = new PDO('mysql:host=mysql;port=3306;dbname=esportify', 'esport', 'esportpass');
+```
+
+# MongoDB
+
+La connexion se fait via :
+
+$client = new MongoDB\Client("mongodb://mongo:27017");
+$scoreCollection = $client->esportify->scores;
 
 ## Auteur
 
