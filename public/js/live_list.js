@@ -1,26 +1,43 @@
 // Lives de la page d'accueil
+// Chargement des lives pour la page d'accueil
 function renderLives(containerId, lives) {
   const container = document.getElementById(containerId);
+  container.replaceChildren();
 
   if (lives.length === 0) {
-    container.innerHTML = `<p style="color: #aaa;">Aucun live pour l’instant.</p>`;
+    // Si aucun live, afficher un message
+    const msg = document.createElement("p");
+    msg.textContent = "Aucun live pour l’instant.";
+    msg.style.color = "#aaa";
+    container.appendChild(msg);
     return;
   }
 
-  container.innerHTML = lives
-    .map(
-      (live) => `
-        <div class="live-card">
-          <img src="${live.image}" alt="${live.jeu}">
-          <h4>${live.jeu}</h4>
-          <p>${live.organisateur}</p>
-          <span>${live.heure}</span>
-        </div>
-      `
-    )
-    .join("");
+  // Créer les cartes pour chaque live
+  lives.forEach((live) => {
+    const card = document.createElement("div");
+    card.className = "live-card";
+
+    const img = document.createElement("img");
+    img.setAttribute("src", live.image);
+    img.setAttribute("alt", live.jeu);
+
+    const title = document.createElement("h4");
+    title.textContent = live.jeu;
+
+    const orga = document.createElement("p");
+    orga.textContent = live.organisateur;
+
+    const heure = document.createElement("span");
+    heure.textContent = live.heure;
+
+    // Ajoute tous les éléments à la carte
+    card.append(img, title, orga, heure);
+    container.appendChild(card);
+  });
 }
 
+// Charge les données des lives depuis l'API
 async function loadLives(type, containerId) {
   try {
     const response = await fetch(`/api/get_lives.php?type=${type}`);
@@ -31,6 +48,7 @@ async function loadLives(type, containerId) {
   }
 }
 
+// lancer le chargement des lives au chargement de la page
 document.addEventListener("DOMContentLoaded", () => {
   loadLives("en-cours", "lives-en-cours");
   loadLives("a-venir", "lives-a-venir");
